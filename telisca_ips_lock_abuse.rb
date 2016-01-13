@@ -7,7 +7,7 @@ require 'msf/core'
 
 class Metasploit3 < Msf::Auxiliary
 
-  include Msf::Auxiliary::Scanner
+  #include Msf::Auxiliary::Scanner
   include Msf::Auxiliary::Report
   include Msf::Exploit::Remote::HttpClient
 
@@ -45,7 +45,7 @@ class Metasploit3 < Msf::Auxiliary
         OptString.new('RHOST', [true, 'The IPSLock IP Address']),
         OptString.new('ACTION', [true, 'LOCK OR UNLOCK','LOCK']),
       ], self.class)
-    deregister_options('RHOST')
+    deregister_options('RHOSTS')
   end
 
   def port_open?
@@ -149,7 +149,7 @@ class Metasploit3 < Msf::Auxiliary
     end
     return res
   end
-  def run_host(ip)
+  def run
   if not port_open?
    print_error("The web server is unreachable !")
    return
